@@ -40,6 +40,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+		<!-- DynamoDB -->
+		<dependency>
+			<groupId>com.github.derjust</groupId>
+			<artifactId>spring-data-dynamodb</artifactId>
+			<version>5.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
