@@ -28,15 +28,10 @@ public class Cell {
     
     
 	public boolean isAdjacentTo(Cell cell) {
-		return  (this.getX()-cell.getX() == -1 &&  this.getY()-cell.getY() == -1) ||
-        (this.getX()-cell.getX() == -1 &&  this.getY()-cell.getY() == 0) ||
-        (this.getX()-cell.getX() == -1 &&  this.getY()-cell.getY() == 1) ||
-        (this.getX()-cell.getX() == 0 &&  this.getY()-cell.getY() == -1) ||
-        (this.getX()-cell.getX() == 0 &&  this.getY()-cell.getY() == 1) ||
-        (this.getX()-cell.getX() == 1 &&  this.getY()-cell.getY() == -1) ||
-        (this.getX()-cell.getX() == 1 &&  this.getY()-cell.getY() == 0) ||
-        (this.getX()-cell.getX() == 1 &&  this.getY()-cell.getY() == 1);
-	}
-
-    
+		return (
+            Math.abs(this.getX()-cell.getX()) <=1 &&
+            Math.abs(this.getY()-cell.getY()) <=1 &&
+            !(this.getX() == cell.getX() && this.getY() == cell.getY())
+        );
+    }
 }
