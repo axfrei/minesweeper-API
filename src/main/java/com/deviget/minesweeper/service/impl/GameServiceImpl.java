@@ -31,20 +31,20 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game createGame(GameRequest newGameRequest) {
-        Game newGame = Game.builder()
-            .status(GameStatus.ACTIVE)
-            .user(newGameRequest.getUser())
-            .build();
-        
+        return saveGame(generateGame(newGameRequest));
+    }
+
+    @Override
+    public Game generateGame(GameRequest newGameRequest) {
+        Game newGame = Game.builder().status(GameStatus.ACTIVE).user(newGameRequest.getUser()).build();
         newGame.initCells(newGameRequest.getColumns(), newGameRequest.getRows(), newGameRequest.getBombs());
-            
-        return saveGame(newGame);
+        return newGame;
     }
 
     @Override
     public Game getGameById(String gameId) {
         Optional<Game> response = gameRepository.findById(gameId);
-        return response.orElseThrow(() -> new MinesweeperApiException("Game with does not exist"));
+        return response.orElseThrow(() -> new MinesweeperApiException("Game with id does not exist"));
     }
 
     @Override
@@ -53,5 +53,4 @@ public class GameServiceImpl implements GameService {
         game.pause();
         return this.gameRepository.save(game);
     }
-    
 }

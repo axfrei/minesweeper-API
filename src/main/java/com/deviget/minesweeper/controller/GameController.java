@@ -32,7 +32,7 @@ public class GameController {
   @PostMapping("/create")
   @ResponseStatus(HttpStatus.CREATED)
   @ApiOperation(value = "Creates a new minesweeper game", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
-  @ApiResponses(value = { @ApiResponse(code = 201, message = "Game created successfully") })
+  @ApiResponses(value = { @ApiResponse(code = 201, message = "Game has been created successfully") })
   public Game createGame(@RequestBody final GameRequest newGameRequest){
     return gameService.createGame(newGameRequest);
   }
@@ -40,7 +40,7 @@ public class GameController {
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "Saves the game", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Games saved successfully") })
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Games has been saved successfully") })
   public Game saveGame(@RequestBody final Game game) {
     return gameService.saveGame(game);
   }
@@ -48,7 +48,7 @@ public class GameController {
   @GetMapping("/{userid}")
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "Gets all the games by user Id", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Games fetched successfully") })
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Games has been fetched successfully") })
   public List<Game> getGamesByUserId(@PathVariable("userid") final String userId) {
     return gameService.getGamesByUserId(userId);
   }
@@ -64,7 +64,7 @@ public class GameController {
   @PutMapping("/pause/{gameId}")
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "Pause/resume a game by Id", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Game paused/resumed successfully") })
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Game has been paused/resumed successfully") })
   public Game pauseGame(@PathVariable("gameId") final String gameId){
     return gameService.pause(gameId);
   }

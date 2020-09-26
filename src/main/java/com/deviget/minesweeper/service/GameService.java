@@ -13,6 +13,8 @@ public interface GameService {
 
 	Game createGame(GameRequest newGameRequest) ;
 
+	Game generateGame(GameRequest newGameRequest);
+
 	Game getGameById(String gameId);
 
 	Game pause(String gameId);
