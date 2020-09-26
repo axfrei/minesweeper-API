@@ -28,8 +28,13 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game createGame(GameRequest newGameRequest) {
-        // TODO do logic to create new game
-        Game newGame = Game.builder().status("active").user(newGameRequest.getUser()).build();
+        Game newGame = Game.builder()
+            .status("active")
+            .user(newGameRequest.getUser())
+            .build();
+        
+        newGame.initCells(newGameRequest.getColumns(), newGameRequest.getRows(), newGameRequest.getBombs());
+            
         return saveGame(newGame);
     }
     
