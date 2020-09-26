@@ -16,13 +16,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerConfig {
     @Bean
     public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any()).build().apiInfo(getApiInfo());
+        return new Docket(DocumentationType.SWAGGER_2).select()
+                .apis(RequestHandlerSelectors.basePackage("com.deviget.minesweeper")).paths(PathSelectors.any()).build()
+                .apiInfo(getApiInfo());
     }
 
     private ApiInfo getApiInfo() {
-        return new ApiInfoBuilder().title("MineSweeper API").description("MineSweeper API")
-                .version("0.1")
+        return new ApiInfoBuilder().title("MineSweeper API").description("MineSweeper API").version("0.1")
                 .contact(new Contact("Axel Freiria", "https://github.com/axfrei/minesweeper-API", "")).build();
     }
 }

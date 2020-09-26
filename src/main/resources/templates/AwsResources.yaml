@@ -9,16 +9,10 @@ Resources:
         - 
           AttributeName: "id"
           AttributeType: "S"
-        - 
-          AttributeName: "status"
-          AttributeType: "S"
       KeySchema:
         -
           AttributeName: "id"
-          KeyType: "HASH"
-        - 
-          AttributeName: "status"
-          KeyType: "RANGE"  
+          KeyType: "HASH" 
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5

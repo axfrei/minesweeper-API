@@ -12,5 +12,9 @@ public interface GameService {
 	List<Game> getGamesByUserId(String userId);
 
 	Game createGame(GameRequest newGameRequest) ;
+
+	Game getGameById(String gameId);
+
+	Game pause(String gameId);
     
 }
