@@ -2,6 +2,7 @@ package com.deviget.minesweeper.controller;
 
 import java.util.List;
 
+import com.deviget.minesweeper.dto.CellRequest;
 import com.deviget.minesweeper.dto.GameRequest;
 import com.deviget.minesweeper.model.Game;
 import com.deviget.minesweeper.service.GameService;
@@ -67,5 +68,21 @@ public class GameController {
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Game has been paused/resumed successfully") })
   public Game pauseGame(@PathVariable("gameId") final String gameId){
     return gameService.pause(gameId);
+  }
+
+  @PostMapping("/flag")
+  @ResponseStatus(HttpStatus.OK)
+  @ApiOperation(value = "Flag a cell", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Cell has been flagged successfully") })
+  public Game flagCell(@RequestBody final CellRequest cellRequest){
+    return gameService.flagCell(cellRequest);
+  }
+
+  @PostMapping("/recognize")
+  @ResponseStatus(HttpStatus.OK)
+  @ApiOperation(value = "Recognize a cell", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Cell has been recognized successfully") })
+  public Game recognizeCell(@RequestBody final CellRequest cellRequest){
+    return gameService.recognizeCell(cellRequest);
   }
 }

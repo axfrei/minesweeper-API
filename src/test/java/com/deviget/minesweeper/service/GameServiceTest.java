@@ -1,20 +1,25 @@
 package com.deviget.minesweeper.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import com.deviget.minesweeper.dto.CellRequest;
 import com.deviget.minesweeper.dto.GameRequest;
 import com.deviget.minesweeper.error.MinesweeperApiException;
+import com.deviget.minesweeper.model.Cell;
 import com.deviget.minesweeper.model.Game;
 import com.deviget.minesweeper.model.GameStatus;
 import com.deviget.minesweeper.model.User;
 import com.deviget.minesweeper.repository.GameRepository;
 
-import org.apache.logging.log4j.util.Timer.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -39,15 +44,25 @@ public class GameServiceTest {
 
     private User user;
 
+    private Cell cellWithBomb;
+
+    private Cell cellWitValue;
+
+    private Cell cellBlank;
+
     @BeforeEach
     public void setup() {
         user = User.builder().id(USER_NAME).build();
-        newGameRequest = GameRequest.builder().bombs(5).columns(5).rows(5).user(user).build();
+        newGameRequest = GameRequest.builder().bombs(5).columns(10).rows(10).user(user).build();
         gameCreated = gameService.generateGame(newGameRequest);
+
+        cellWithBomb = gameCreated.getCells().stream().filter(c -> c.isBomb()).findFirst().orElseThrow();
+        cellWitValue = gameCreated.getCells().stream().filter(c -> !c.isBomb() && c.getValue()>0).findFirst().orElseThrow();
+        cellBlank = gameCreated.getCells().stream().filter(c -> !c.isBomb() && c.getValue()==0).findFirst().orElseThrow();
     }
 
     @Test
-    void valeidGameRequestSavesNewGame(){
+    void validGameRequestSavesNewGame(){
         Mockito.when(gameRepository.save(any(Game.class))).thenReturn(this.gameCreated);
         
         Game game = gameService.createGame(newGameRequest);
@@ -98,7 +113,7 @@ public class GameServiceTest {
     void pauseAnOverGameThrowsMinesweeperApiException(){
         String gameId = UUID.randomUUID().toString();
         this.gameCreated.setId(gameId);
-        this.gameCreated.setStatus(GameStatus.OVER);
+        this.gameCreated.setStatus(GameStatus.GAME_OVER);
         Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
         Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
         
@@ -108,6 +123,120 @@ public class GameServiceTest {
         } catch(MinesweeperApiException e){
             assertEquals(e.getMessage(),"The game is over and could not be resumed/paused");
         }
+    }
+
+    @Test
+    void flagCell(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        CellRequest cellRequest = CellRequest.builder().gameId(gameId).x(0).y(0).build();
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
+        
+        assertTrue(gameService.flagCell(cellRequest).getCell(0, 0).isFlagged());
+    }
+
+    @Test
+    void unflagCell(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        gameCreated.getCell(0,0).flag();
+
+        CellRequest cellRequest = CellRequest.builder().gameId(gameId).x(0).y(0).build();
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
+        
+        assertFalse(gameService.flagCell(cellRequest).getCell(0, 0).isFlagged());
+    }
+
+    @Test
+    void flagOutOfIndexCellThrowsMinesweeperApiException(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        CellRequest cellRequest = CellRequest.builder().gameId(gameId).x(99).y(99).build();
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
+        
+        try{
+            gameService.flagCell(cellRequest);
+            fail();
+        } catch(MinesweeperApiException e) {
+            assertEquals(e.getMessage(), "Requested cell is out of index");
+        }
+    }
+
+    @Test
+    void recognizeCellThatIsNotBlankJustRecognizeOnlyOneCell(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
+        
+        int previusRecognizedAmount = gameCreated.getCells().stream().map(c -> c.isRecognized() ? 1 : 0).reduce(0,Integer::sum);
+
+        gameService.recognizeCell(CellRequest.builder().gameId(gameId).x(cellWitValue.getX()).y(cellWitValue.getY()).build());
+
+        int recognizedAmount = gameCreated.getCells().stream().map(c -> c.isRecognized() ? 1 : 0).reduce(0,Integer::sum);
+        Cell recognizedCell = gameCreated.getCells().stream().filter(c -> c.isRecognized()).findFirst().orElseThrow();
+
+        assertEquals(recognizedAmount, previusRecognizedAmount+1);
+        assertEquals(recognizedCell.getX(), cellWitValue.getX());
+        assertEquals(recognizedCell.getY(), cellWitValue.getY());
+    }
+
+    @Test
+    void recognizeCellThatIsBlank(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
+
+        Game game = gameService.recognizeCell(CellRequest.builder().gameId(gameId).x(cellBlank.getX()).y(cellBlank.getY()).build());
+
+        game.getAdjacentCellsStream(cellBlank).filter(c -> c.getValue()==0 && !c.isBomb()).forEach(c-> assertTrue(c.isRecognized()));
+    }
+
+    @Test
+    void recognizeCellThatIsBombChangeGameStatusToGameOVer(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
+        
+        Game game = gameService.recognizeCell(CellRequest.builder().gameId(gameId).x(cellWithBomb.getX()).y(cellWithBomb.getY()).build());
+
+        assertEquals(game.getStatus(), GameStatus.GAME_OVER);
+    }
+
+    @Test
+    void recognizeCellThatIsOutOfIndexThrowsMinesweeperApiException(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        CellRequest cellRequest = CellRequest.builder().gameId(gameId).x(99).y(99).build();
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
+        
+        try{
+            gameService.recognizeCell(cellRequest);
+            fail();
+        } catch(MinesweeperApiException e) {
+            assertEquals(e.getMessage(), "Requested cell is out of index");
+        }
+    }
+
+    @Test
+    void recognizeAllNotBombCellsMakesYouAWinner(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
+
+        Game finalScore = gameCreated.getCells().stream().filter(c -> !c.isBomb()).map(notBomb -> {
+            Game game = gameService.recognizeCell(CellRequest.builder().gameId(gameId).x(notBomb.getX()).y(notBomb.getY()).build());
+            return game;
+        }).reduce((a, b) -> a).orElseThrow();
+        
+        assertEquals(finalScore.getStatus(), GameStatus.WIN);
     }
 
 }

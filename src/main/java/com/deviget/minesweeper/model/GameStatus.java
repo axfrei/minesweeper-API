@@ -15,7 +15,13 @@ public enum GameStatus {
             return GameStatus.ACTIVE;
         };
     },
-    OVER {
+    GAME_OVER {
+        @Override
+        GameStatus pause() {
+            throw new MinesweeperApiException("The game is over and could not be resumed/paused");
+        };
+    },
+    WIN {
         @Override
         GameStatus pause() {
             throw new MinesweeperApiException("The game is over and could not be resumed/paused");

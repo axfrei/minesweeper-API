@@ -2,6 +2,7 @@ package com.deviget.minesweeper.service;
 
 import java.util.List;
 
+import com.deviget.minesweeper.dto.CellRequest;
 import com.deviget.minesweeper.dto.GameRequest;
 import com.deviget.minesweeper.model.Game;
 
@@ -18,5 +19,9 @@ public interface GameService {
 	Game getGameById(String gameId);
 
 	Game pause(String gameId);
+
+	Game flagCell(CellRequest cellRequest);
+
+	Game recognizeCell(CellRequest cellRequest);
     
 }

@@ -3,8 +3,10 @@ package com.deviget.minesweeper.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import com.deviget.minesweeper.dto.CellRequest;
 import com.deviget.minesweeper.dto.GameRequest;
 import com.deviget.minesweeper.error.MinesweeperApiException;
+import com.deviget.minesweeper.model.Cell;
 import com.deviget.minesweeper.model.Game;
 import com.deviget.minesweeper.model.GameStatus;
 import com.deviget.minesweeper.repository.GameRepository;
@@ -53,4 +55,21 @@ public class GameServiceImpl implements GameService {
         game.pause();
         return this.gameRepository.save(game);
     }
+
+    @Override
+    public Game flagCell(CellRequest cellRequest) {
+        Game game = getGameById(cellRequest.getGameId());
+        Cell cell = game.getCell(cellRequest.getX(), cellRequest.getY());
+        cell.flag();
+        return saveGame(game);
+    }
+
+    @Override
+    public Game recognizeCell(CellRequest cellRequest) {
+        Game game = getGameById(cellRequest.getGameId());
+        Cell cell = game.getCell(cellRequest.getX(), cellRequest.getY());
+        game.recognizeCell(cell);
+        return saveGame(game);
+    }
+
 }

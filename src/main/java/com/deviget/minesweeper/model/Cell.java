@@ -34,4 +34,9 @@ public class Cell {
             !(this.getX() == cell.getX() && this.getY() == cell.getY())
         );
     }
+
+
+	public void flag() {
+        this.flagged = !this.flagged;
+	}
 }
