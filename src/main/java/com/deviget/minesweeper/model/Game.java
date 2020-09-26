@@ -46,34 +46,28 @@ public class Game {
 
     public Game initCells(int columns, int rows, int bombs) {
 
-            this.cells = new ArrayList<Cell>();
             Random random = new Random();
+            this.cells = new ArrayList<Cell>();
+            
+            //lets create cells and asing bombs :D
             for (int r = 0; r <rows; r++) {
                 for (int c = 0; c <columns; c++) {
                     cells.add(Cell.builder().x(r).y(c).bomb(random.nextBoolean() && (bombs-- > 0) ).build());
                 }
             }
 
-            cells.stream().map(cToFill -> {
-                int value = getAdyacentCellsStream(cToFill).map(c -> c.isBomb()? 1:0).reduce(0,Integer::sum);
-                cToFill.setValue(value);
-                return cToFill;
+            //lets calculate the value for each cell
+            cells.stream().map(cellToInit -> {
+                int value = getAdjacentCellsStream(cellToInit).map(c -> c.isBomb()? 1:0).reduce(0,Integer::sum);
+                cellToInit.setValue(value);
+                return cellToInit;
             }).collect(Collectors.toList());
 
 		return this;
 	}
 
 
-    private Stream<Cell> getAdyacentCellsStream(Cell cell) {
-        return cells.stream().filter(c ->
-            (c.getX()-cell.getX() == -1 &&  c.getY()-cell.getY() == -1) ||
-            (c.getX()-cell.getX() == -1 &&  c.getY()-cell.getY() == 0) ||
-            (c.getX()-cell.getX() == -1 &&  c.getY()-cell.getY() == 1) ||
-            (c.getX()-cell.getX() == 0 &&  c.getY()-cell.getY() == -1) ||
-            (c.getX()-cell.getX() == 0 &&  c.getY()-cell.getY() == 1) ||
-            (c.getX()-cell.getX() == 1 &&  c.getY()-cell.getY() == -1) ||
-            (c.getX()-cell.getX() == 1 &&  c.getY()-cell.getY() == 0) ||
-            (c.getX()-cell.getX() == 1 &&  c.getY()-cell.getY() == 1)
-            );
+    private Stream<Cell> getAdjacentCellsStream(Cell cell) {
+        return cells.stream().filter(c -> c.isAdjacentTo(cell));
     }
 }

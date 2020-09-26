@@ -22,5 +22,16 @@ public class Cell {
 
     private boolean recognized;
 
+	public boolean isAdjacentTo(Cell cell) {
+		return  (this.getX()-cell.getX() == -1 &&  this.getY()-cell.getY() == -1) ||
+        (this.getX()-cell.getX() == -1 &&  this.getY()-cell.getY() == 0) ||
+        (this.getX()-cell.getX() == -1 &&  this.getY()-cell.getY() == 1) ||
+        (this.getX()-cell.getX() == 0 &&  this.getY()-cell.getY() == -1) ||
+        (this.getX()-cell.getX() == 0 &&  this.getY()-cell.getY() == 1) ||
+        (this.getX()-cell.getX() == 1 &&  this.getY()-cell.getY() == -1) ||
+        (this.getX()-cell.getX() == 1 &&  this.getY()-cell.getY() == 0) ||
+        (this.getX()-cell.getX() == 1 &&  this.getY()-cell.getY() == 1);
+	}
+
     
 }
