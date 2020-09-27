@@ -17,7 +17,6 @@ import com.deviget.minesweeper.error.MinesweeperApiException;
 import com.deviget.minesweeper.model.Cell;
 import com.deviget.minesweeper.model.Game;
 import com.deviget.minesweeper.model.GameStatus;
-import com.deviget.minesweeper.model.User;
 import com.deviget.minesweeper.repository.GameRepository;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,9 +39,7 @@ public class GameServiceTest {
 
     private Game gameCreated;
 
-    private final String USER_NAME = "AN_USER";
-
-    private User user;
+    private final String USER_ID = "AN_USER";
 
     private Cell cellWithBomb;
 
@@ -52,8 +49,7 @@ public class GameServiceTest {
 
     @BeforeEach
     public void setup() {
-        user = User.builder().id(USER_NAME).build();
-        newGameRequest = GameRequest.builder().bombs(5).columns(10).rows(10).user(user).build();
+        newGameRequest = GameRequest.builder().bombs(5).columns(10).rows(10).userId(USER_ID).build();
         gameCreated = gameService.generateGame(newGameRequest);
 
         cellWithBomb = gameCreated.getCells().stream().filter(c -> c.isBomb()).findFirst().orElseThrow();
@@ -69,8 +65,8 @@ public class GameServiceTest {
 
         assertNotNull(game);
         assertEquals(newGameRequest.getRows() * newGameRequest.getColumns(), game.getCells().size());
-        assertEquals(newGameRequest.getBombs(), game.getBombs());
-        assertEquals(newGameRequest.getUser(), game.getUser());
+        assertEquals(newGameRequest.getBombs(), game.bombsAmount());
+        assertEquals(newGameRequest.getUserId(), game.getUserId());
     }
 
     @Test

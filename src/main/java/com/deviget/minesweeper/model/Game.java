@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
@@ -22,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-@DynamoDBTable(tableName = "Games")
+@DynamoDBTable(tableName = "MinesweeperApi.Games")
 @Data
 @AllArgsConstructor
 @Builder
@@ -32,8 +31,8 @@ public class Game {
     @DynamoDBHashKey(attributeName = "id")
     private String id;
 
-    @DynamoDBAttribute(attributeName = "user")
-    private User user;
+    @DynamoDBAttribute(attributeName = "userId")
+    private String userId;
 
     @DynamoDBAttribute(attributeName = "cells")
     private List<Cell> cells;
@@ -76,11 +75,10 @@ public class Game {
         }
 
         // lets calculate the value for each cell
-        cells.stream().map(cellToInit -> {
+        cells.stream().forEach(cellToInit -> {
             int value = getAdjacentCellsStream(cellToInit).map(c -> c.isBomb() ? 1 : 0).reduce(0, Integer::sum);
             cellToInit.setValue(value);
-            return cellToInit;
-        }).collect(Collectors.toList());
+        });
 
         return this;
     }
@@ -106,7 +104,7 @@ public class Game {
         }
 
         int totalRecognized = cells.stream().map(c -> c.isRecognized() ? 1 : 0).reduce(0, Integer::sum);
-        int totalBombs = getBombs();
+        int totalBombs = bombsAmount();
 
         if (totalRecognized + totalBombs == cells.size()) {
             this.setStatus(GameStatus.WIN);
@@ -123,7 +121,7 @@ public class Game {
         });
     }
 
-    public Integer getBombs() {
+    public Integer bombsAmount() {
         return cells.stream().map(c -> c.isBomb() ? 1 : 0).reduce(0, Integer::sum);
     }
 

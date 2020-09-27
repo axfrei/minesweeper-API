@@ -1,7 +1,5 @@
 package com.deviget.minesweeper.dto;
 
-import com.deviget.minesweeper.model.User;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,6 +13,6 @@ public class GameRequest {
 
     private int bombs;
 
-    private User user;
+    private String userId;
 
 }

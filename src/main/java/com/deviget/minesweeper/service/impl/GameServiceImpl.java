@@ -38,7 +38,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game generateGame(GameRequest newGameRequest) {
-        Game newGame = Game.builder().status(GameStatus.ACTIVE).user(newGameRequest.getUser()).build();
+        Game newGame = Game.builder().status(GameStatus.ACTIVE).userId(newGameRequest.getUserId()).build();
         newGame.initCells(newGameRequest.getColumns(), newGameRequest.getRows(), newGameRequest.getBombs());
         return newGame;
     }
