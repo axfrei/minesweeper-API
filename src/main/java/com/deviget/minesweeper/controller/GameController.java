@@ -41,7 +41,7 @@ public class GameController {
   @PutMapping
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "Saves the game", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Games has been saved successfully") })
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Game has been saved successfully") })
   public Game saveGame(@RequestBody final Game game) {
     return gameService.saveGame(game);
   }
@@ -49,7 +49,7 @@ public class GameController {
   @GetMapping("/{userid}")
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "Gets all the games by user Id", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Games has been fetched successfully") })
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Games have been fetched successfully") })
   public List<Game> getGamesByUserId(@PathVariable("userid") final String userId) {
     return gameService.getGamesByUserId(userId);
   }
