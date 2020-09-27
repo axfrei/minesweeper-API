@@ -38,7 +38,7 @@ public class GameController {
     return gameService.createGame(newGameRequest);
   }
 
-  @PostMapping
+  @PutMapping
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "Saves the game", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Games has been saved successfully") })
@@ -70,7 +70,7 @@ public class GameController {
     return gameService.pause(gameId);
   }
 
-  @PostMapping("/flag")
+  @PutMapping("/flag")
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "Flag a cell", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Cell has been flagged successfully") })
@@ -78,7 +78,7 @@ public class GameController {
     return gameService.flagCell(cellRequest);
   }
 
-  @PostMapping("/recognize")
+  @PutMapping("/recognize")
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "Recognize a cell", response = Game.class, produces = MediaType.APPLICATION_JSON_VALUE)
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Cell has been recognized successfully") })
