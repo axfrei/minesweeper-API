@@ -34,6 +34,9 @@ public class Game {
     @DynamoDBAttribute(attributeName = "userId")
     private String userId;
 
+    @DynamoDBAttribute(attributeName = "metadata")
+    private GameMetadata metadata;
+
     @DynamoDBAttribute(attributeName = "cells")
     private List<Cell> cells;
 
@@ -54,7 +57,7 @@ public class Game {
 
     public Game initCells(int columns, int rows, int bombs) {
 
-       
+        this.setMetadata(GameMetadata.builder().rows(rows).columns(columns).bombs(bombs).build());
 
         if(columns*rows <= bombs){
             throw new MinesweeperApiException("Invalid request. Amount of bombs should be less than total amount of cells");
