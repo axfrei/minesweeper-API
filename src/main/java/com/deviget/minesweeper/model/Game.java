@@ -110,7 +110,7 @@ public class Game {
         Calendar endDate = Calendar.getInstance();
         endDate.setTime(new Date());
         long diffSeconds = (endDate.getTimeInMillis() - initDate.getTimeInMillis()) / 1000;
-        this.timePaused = (this.timePaused != null ? this.timePaused : 0) + diffSeconds;
+        this.timePaused = this.timePaused + diffSeconds;
     }
 
     public Long getTimePlayed() {
