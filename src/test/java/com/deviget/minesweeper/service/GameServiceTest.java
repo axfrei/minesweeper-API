@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,7 +52,8 @@ public class GameServiceTest {
     public void setup() {
         newGameRequest = GameRequest.builder().bombs(5).columns(10).rows(10).userId(USER_ID).build();
         gameCreated = gameService.generateGame(newGameRequest);
-
+        this.gameCreated.setCreationTime(new Date());
+        
         cellWithBomb = gameCreated.getCells().stream().filter(c -> c.isBomb()).findFirst().orElseThrow();
         cellWitValue = gameCreated.getCells().stream().filter(c -> !c.isBomb() && c.getValue()>0).findFirst().orElseThrow();
         cellBlank = gameCreated.getCells().stream().filter(c -> !c.isBomb() && c.getValue()==0).findFirst().orElseThrow();

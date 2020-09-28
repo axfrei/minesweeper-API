@@ -7,6 +7,11 @@ public enum GameStatus {
         @Override
         GameStatus pause() {
             return GameStatus.PAUSED;
+        }
+
+        @Override
+        boolean isEnded() {
+           return false;
         };
     },
     PAUSED {
@@ -14,11 +19,19 @@ public enum GameStatus {
         GameStatus pause() {
             return GameStatus.ACTIVE;
         };
+        @Override
+        boolean isEnded() {
+           return false;
+        };
     },
     GAME_OVER {
         @Override
         GameStatus pause() {
             throw new MinesweeperApiException("The game is over and could not be resumed/paused");
+        };
+        @Override
+        boolean isEnded() {
+           return true;
         };
     },
     WIN {
@@ -26,7 +39,12 @@ public enum GameStatus {
         GameStatus pause() {
             throw new MinesweeperApiException("The game is over and could not be resumed/paused");
         };
+        @Override
+        boolean isEnded() {
+           return true;
+        };
     };
 
     abstract GameStatus pause();
+    abstract boolean isEnded();
 }
