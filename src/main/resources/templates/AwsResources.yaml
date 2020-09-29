@@ -4,7 +4,7 @@ Resources:
   GameDynamoDBTable: 
     Type: AWS::DynamoDB::Table
     Properties: 
-      TableName: "Games"
+      TableName: "MinesweeperApi.Games"
       AttributeDefinitions: 
         - 
           AttributeName: "id"
