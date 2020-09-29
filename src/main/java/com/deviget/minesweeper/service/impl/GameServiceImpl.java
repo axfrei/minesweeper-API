@@ -60,7 +60,7 @@ public class GameServiceImpl implements GameService {
     public Game flagCell(CellRequest cellRequest) {
         Game game = getGameById(cellRequest.getGameId());
         Cell cell = game.getCell(cellRequest.getX(), cellRequest.getY());
-        cell.flag();
+        game.flagCell(cell);
         return saveGame(game);
     }
 

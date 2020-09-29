@@ -65,6 +65,11 @@ public class Game {
 
         this.setMetadata(GameMetadata.builder().rows(rows).columns(columns).bombs(bombs).build());
 
+        if (columns <= 0 ||  rows <=0 || bombs<=0) {
+            throw new MinesweeperApiException(
+                    "Invalid request. Columns, Rows and Bombs should be greater that 0");
+        }
+
         if (columns * rows <= bombs) {
             throw new MinesweeperApiException(
                     "Invalid request. Amount of bombs should be less than total amount of cells");
@@ -113,16 +118,10 @@ public class Game {
         this.timePaused = this.timePaused + diffSeconds;
     }
 
-    public Long getTimePlayed() {
-        Calendar initDate = Calendar.getInstance();
-        initDate.setTime(this.creationTime);
-        Calendar endDate = Calendar.getInstance();
-        endDate.setTime(this.getStatus().isEnded()?this.getLastUpdate():new Date());
-        long diffSeconds = (endDate.getTimeInMillis() - initDate.getTimeInMillis()) / 1000;
-        return diffSeconds - getTimePaused();
-    }
-
     public Game recognizeCell(Cell cell) {
+        if(!this.getStatus().equals(GameStatus.ACTIVE)){
+            throw new MinesweeperApiException("You could not do a move in a non active game");
+        }
         cell.setRecognized(true);
 
         if (cell.isBomb()) {
@@ -163,4 +162,11 @@ public class Game {
         return cells.stream().filter(c -> c.getX() == x && c.getY() == y).findFirst()
                 .orElseThrow(() -> new MinesweeperApiException("Requested cell is out of index"));
     }
+
+	public void flagCell(Cell cell) {
+        if(!this.getStatus().equals(GameStatus.ACTIVE)){
+            throw new MinesweeperApiException("You could not do a move in a non active game");
+        }
+        cell.flag();
+	}
 }

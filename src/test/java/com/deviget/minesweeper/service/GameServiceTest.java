@@ -83,6 +83,18 @@ public class GameServiceTest {
         }
     }
 
+    @Test
+    void invalidGameRequestWithZeroBombsThrowsMinesweeperApiException(){
+        GameRequest gameRequest = GameRequest.builder().bombs(0).rows(5).columns(5).build();
+        
+        try{
+            gameService.createGame(gameRequest);
+            fail();
+        } catch (MinesweeperApiException e) {
+            assertEquals(e.getMessage(),"Invalid request. Columns, Rows and Bombs should be greater that 0");
+        }
+    }
+
     
     @Test
     void pauseActiveGame(){
@@ -225,7 +237,9 @@ public class GameServiceTest {
     @Test
     void recognizeAllNotBombCellsMakesYouAWinner(){
         String gameId = UUID.randomUUID().toString();
-        this.gameCreated.setId(gameId);
+        newGameRequest = GameRequest.builder().bombs(1).columns(2).rows(2).userId(USER_ID).build();
+        gameCreated = gameService.generateGame(newGameRequest);
+        gameCreated.setId(gameId);
         Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
         Mockito.when(gameRepository.save(eq(gameCreated))).thenReturn(gameCreated);
 
@@ -235,6 +249,38 @@ public class GameServiceTest {
         }).reduce((a, b) -> a).orElseThrow();
         
         assertEquals(finalScore.getStatus(), GameStatus.WIN);
+    }
+
+    @Test
+    void couldNotRecognizeACellInAGameThatIsNotActive(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        this.gameCreated.setStatus(GameStatus.PAUSED);
+        CellRequest cellRequest = CellRequest.builder().gameId(gameId).x(5).y(5).build();
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        
+        try{
+            gameService.recognizeCell(cellRequest);
+            fail();
+        } catch(MinesweeperApiException e) {
+            assertEquals(e.getMessage(), "You could not do a move in a non active game");
+        }
+    }
+
+    @Test
+    void couldNotFlagACellInAGameThatIsNotActive(){
+        String gameId = UUID.randomUUID().toString();
+        this.gameCreated.setId(gameId);
+        this.gameCreated.setStatus(GameStatus.PAUSED);
+        CellRequest cellRequest = CellRequest.builder().gameId(gameId).x(5).y(5).build();
+        Mockito.when(gameRepository.findById(eq(gameId))).thenReturn(Optional.of(gameCreated));
+        
+        try{
+            gameService.recognizeCell(cellRequest);
+            fail();
+        } catch(MinesweeperApiException e) {
+            assertEquals(e.getMessage(), "You could not do a move in a non active game");
+        }
     }
 
 }
